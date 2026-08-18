@@ -5,33 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Full Screen Countdown Timer</title>
 <style>
-/* 1. 全域與外框設定：確保外層不爆框、背景純黑 */
-html, body {
-margin: 0;
-padding: 0;
-width: 100vw;
-height: 100vh;
-background-color: #000000;
-overflow: hidden;
-display: flex;
-justify-content: center;
-align-items: center;
-}
-
-/* 2. 固定比例 Canvas 畫布：設定你原始電腦設計的基準解析度 (1920x1080) */
-#canvas-stage {
-width: 1920px;
-height: 1080px;
-flex-shrink: 0;
-display: flex;
-justify-content: center;
-align-items: center;
-transform-origin: center center;
-background-color: #000000;
-}
-
-/* ---------------- 以下為你原本完全未動的 CSS 樣式 ---------------- */
-
 /* 直接調用你 Timer 資料夾內的 AvenirNext Demi 本地檔案 */
 @font-face {
 font-family: 'Avenir Next Local';
@@ -49,17 +22,26 @@ padding: 0;
 box-sizing: border-box;
 }
 
-.timer-body-content {
+body {
+background-color: #000000;
 color: #ffffff;
+width: 100vw;
+height: 100vh;
+display: flex;
+justify-content: center;
+align-items: center;
+overflow: hidden;
 font-family: 'Avenir Next Local', sans-serif;
 -webkit-font-smoothing: antialiased;
 }
 
-/* 計時器整體佈局 */
+/* 計時器整體佈局：固定總寬度 81cm */
 .timer-container {
 display: flex;
 align-items: flex-start;
-justify-content: center;
+justify-content: center; space-between;
+width:81cm;
+height: 7.5cm;
 }
 
 /* 單個數字+英文標籤組 */
@@ -72,36 +54,36 @@ justify-content: center;
 
 /* 數字設定：拉寬兩位數字之間的距離 */
 .time-unit {
-font-size: 10cm;
-line-height: 0.9;
+font-size: 5.7cm;
+line-height: 0.95;
 font-variant-numeric: tabular-nums;
-letter-spacing: 0.15em;
+letter-spacing: 0.05em;
 }
 
 /* 冒號設定：加大兩側邊距，增加呼吸感 */
 .separator {
-font-size: 8cm;
-line-height: 0.9;
-margin: 0 0.3em;
+font-size: 4.5cm;
+
+line-height: 0.95;
+margin: 0 0.3cm;
 position: relative;
-top: -0.06em;
+top: -0.02em;
 }
 
 /* 下方英文標籤設定：縮短與上方數字的距離 */
 .label {
-font-size: 1.3cm;
+font-size: 0.96cm;
 text-transform: uppercase;
-letter-spacing: 0.28em;
-margin-top: 0.5cm; /* 緊貼數字下方 */
+letter-spacing: 0.08em;
+margin-top: 0.24cm; /* 緊貼數字下方 */
 color: #ffffff;
 text-align: center;
-padding-left: 0.28em;
+padding-left: 0.08em;
 }
 </style>
 </head>
 <body>
 
-<div id="canvas-stage" class="timer-body-content">
 <div class="timer-container">
 <div class="time-group">
 <span id="months" class="time-unit">00</span>
@@ -136,31 +118,9 @@ padding-left: 0.28em;
 <span class="label">SECONDS</span>
 </div>
 </div>
-</div>
 
 <script>
-// 1. 動態等比例縮放邏輯
-function autoScale() {
-const designWidth = 1920; // 基準寬度 (可以根據你電腦調校時的最佳寬度微調)
-const designHeight = 1080; // 基準高度
-
-const currentWidth = window.innerWidth;
-const currentHeight = window.innerHeight;
-
-// 計算 X 與 Y 軸縮放比，取較小者（Contain 模式）確保畫面完整顯示且不爆框
-const scaleX = currentWidth / designWidth;
-const scaleY = currentHeight / designHeight;
-const scale = Math.min(scaleX, scaleY);
-
-const stage = document.getElementById('canvas-stage');
-stage.style.transform = `scale(${scale})`;
-}
-
-// 監聽螢幕大小變動與載入
-window.addEventListener('resize', autoScale);
-window.addEventListener('DOMContentLoaded', autoScale);
-
-// 2. 原有倒數計時邏輯
+// 設定目標時間：香港時間 2026年12月16日 00:00:00
 const targetDate = new Date(2026, 11, 16, 0, 0, 0);
 
 function updateTimer() {
