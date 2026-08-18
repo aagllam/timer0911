@@ -1,159 +1,176 @@
-Html
-
 <!DOCTYPE html>
 <html lang="zh-HK">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Timer</title>
+<title>Full Screen Countdown Timer</title>
 <style>
-/* 載入保存在 Timer 資料夾內的 AvenirNext Demi 字體檔 */
+/* 直接調用你 Timer 資料夾內的 AvenirNext Demi 本地檔案 */
 @font-face {
-font-family: 'AvenirNextDemi';
-src: url('AvenirNext-DemiBold.ttf') format('truetype'),
-url('AvenirNext-Demi.ttf') format('truetype'),
-url('AvenirNextDemi.ttf') format('truetype'),
-url('AvenirNext-DemiBold.otf') format('opentype'),
-url('AvenirNext-Demi.otf') format('opentype'),
-url('AvenirNext-DemiBold.woff') format('woff'),
-url('AvenirNext-DemiBold.woff2') format('woff2');
-font-weight: 600;
+font-family: 'Avenir Next Local';
+src: url('AvenirNext.otf') format('opentype'),
+url('AvenirNext.ttf') format('truetype'),
+local('Avenir Next Demi Bold'),
+local('Avenir Next Medium');
+font-weight: normal;
 font-style: normal;
 }
 
 * {
-box-sizing: border-box;
 margin: 0;
 padding: 0;
+box-sizing: border-box;
 }
 
 body {
-background-color: #000000; /* 純黑底 */
-color: #ffffff; /* 純白字 */
-height: 100vh;
+background-color: #000000;
+color: #ffffff;
 width: 100vw;
+height: 100vh;
 display: flex;
 justify-content: center;
 align-items: center;
 overflow: hidden;
-font-family: 'AvenirNextDemi', 'Avenir Next', 'Avenir', sans-serif;
+font-family: 'Avenir Next Local', sans-serif;
+-webkit-font-smoothing: antialiased;
 }
 
+/* 計時器整體佈局 */
 .timer-container {
 display: flex;
-align-items: center;
+align-items: flex-start;
 justify-content: center;
-width: 95vw;
-text-align: center;
 }
 
-.number-box {
+/* 單個數字+英文標籤組 */
+.time-group {
 display: flex;
 flex-direction: column;
 align-items: center;
+justify-content: center;
 }
 
-/* 10位數字自動適應縮放，防止爆框 */
-.time-num {
-font-size: clamp(2rem, 8vw, 7rem);
-font-weight: 600;
-line-height: 1;
-font-family: 'AvenirNextDemi', 'Avenir Next', sans-serif;
+/* 數字設定：拉寬兩位數字之間的距離 */
+.time-unit {
+font-size: 10cm;
+line-height: 0.9;
+font-variant-numeric: tabular-nums;
+letter-spacing: 0.10em;
 }
 
+/* 冒號設定：加大兩側邊距，增加呼吸感 */
+.separator {
+font-size: 8cm;
+
+line-height: 0.9;
+margin: 0 0.3em;
+position: relative;
+top: -0.06em;
+}
+
+/* 下方英文標籤設定：縮短與上方數字的距離 */
 .label {
-font-size: clamp(0.7rem, 1.8vw, 1.8rem);
-margin-top: 12px;
-letter-spacing: 12px;
-color: #aaaaaa;
-font-family: 'AvenirNextDemi', 'Avenir Next', sans-serif;
-}
-
-.colon {
-font-size: clamp(1.8rem, 6vw, 5.5rem);
-margin: 0 0.8vw;
-line-height: 1;
-padding-bottom: 1.5vw;
-font-family: 'AvenirNextDemi', 'Avenir Next', sans-serif;
+font-size: 1.3cm;
+text-transform: uppercase;
+letter-spacing: 0.28em;
+margin-top: 0.5cm; /* 緊貼數字下方 */
+color: #ffffff;
+text-align: center;
+padding-left: 0.28em;
 }
 </style>
 </head>
 <body>
 
 <div class="timer-container">
-<!-- 月 -->
-<div class="number-box">
-<span id="months" class="time-num">00</span>
+<div class="time-group">
+<span id="months" class="time-unit">00</span>
 <span class="label">MONTHS</span>
 </div>
 
-<div class="colon">:</div>
+<span class="separator">:</span>
 
-<!-- 日 -->
-<div class="number-box">
-<span id="days" class="time-num">00</span>
+<div class="time-group">
+<span id="days" class="time-unit">00</span>
 <span class="label">DAYS</span>
 </div>
 
-<div class="colon">:</div>
+<span class="separator">:</span>
 
-<!-- 時 -->
-<div class="number-box">
-<span id="hours" class="time-num">00</span>
+<div class="time-group">
+<span id="hours" class="time-unit">00</span>
 <span class="label">HOURS</span>
 </div>
 
-<div class="colon">:</div>
+<span class="separator">:</span>
 
-<!-- 分 -->
-<div class="number-box">
-<span id="minutes" class="time-num">00</span>
+<div class="time-group">
+<span id="minutes" class="time-unit">00</span>
 <span class="label">MINUTES</span>
 </div>
 
-<div class="colon">:</div>
+<span class="separator">:</span>
 
-<!-- 秒 -->
-<div class="number-box">
-<span id="seconds" class="time-num">00</span>
+<div class="time-group">
+<span id="seconds" class="time-unit">00</span>
 <span class="label">SECONDS</span>
 </div>
 </div>
 
 <script>
-// 已設定為香港時間 (UTC+8) 2026年12月16日 00:00:00
-const targetDate = new Date("2026-12-16T00:00:00+08:00").getTime();
+// 設定目標時間：香港時間 2026年12月16日 00:00:00
+const targetDate = new Date(2026, 11, 16, 0, 0, 0);
 
 function updateTimer() {
-const now = new Date().getTime();
-const difference = targetDate - now;
+const now = new Date();
 
-if (difference > 0) {
-// 計算 月、日、時、分、秒
-const months = Math.floor(difference / (1000 * 60 * 60 * 24 * 30.44));
-const days = Math.floor((difference % (1000 * 60 * 60 * 24 * 30.44)) / (1000 * 60 * 60 * 24));
-const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-
-document.getElementById("months").innerText = String(months).padStart(2, '0');
-document.getElementById("days").innerText = String(days).padStart(2, '0');
-document.getElementById("hours").innerText = String(hours).padStart(2, '0');
-document.getElementById("minutes").innerText = String(minutes).padStart(2, '0');
-document.getElementById("seconds").innerText = String(seconds).padStart(2, '0');
-} else {
-document.getElementById("months").innerText = "00";
-document.getElementById("days").innerText = "00";
-document.getElementById("hours").innerText = "00";
-document.getElementById("minutes").innerText = "00";
-document.getElementById("seconds").innerText = "00";
+if (now >= targetDate) {
+document.getElementById('months').textContent = "00";
+document.getElementById('days').textContent = "00";
+document.getElementById('hours').textContent = "00";
+document.getElementById('minutes').textContent = "00";
+document.getElementById('seconds').textContent = "00";
+return;
 }
+
+let m = (targetDate.getFullYear() - now.getFullYear()) * 12 + (targetDate.getMonth() - now.getMonth());
+
+let tempDate = new Date(now.getTime());
+tempDate.setMonth(tempDate.getMonth() + m);
+
+if (tempDate > targetDate) {
+m--;
+tempDate = new Date(now.getTime());
+tempDate.setMonth(tempDate.getMonth() + m);
+}
+
+let diff = targetDate - tempDate;
+
+const second = 1000;
+const minute = second * 60;
+const hour = minute * 60;
+const day = hour * 24;
+
+const d = Math.floor(diff / day);
+diff %= day;
+
+const h = Math.floor(diff / hour);
+diff %= hour;
+
+const min = Math.floor(diff / minute);
+diff %= minute;
+
+const s = Math.floor(diff / second);
+
+document.getElementById('months').textContent = String(m).padStart(2, '0');
+document.getElementById('days').textContent = String(d).padStart(2, '0');
+document.getElementById('hours').textContent = String(h).padStart(2, '0');
+document.getElementById('minutes').textContent = String(min).padStart(2, '0');
+document.getElementById('seconds').textContent = String(s).padStart(2, '0');
 }
 
 setInterval(updateTimer, 1000);
 updateTimer();
 </script>
-
 </body>
 </html>
-
